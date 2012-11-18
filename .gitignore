@@ -1,0 +1,11 @@
+.eunit
+*.beam
+*.app
+*.dump
+deps/*
+.DS_Store
+log
+logs
+ebin/*
+*.log
+assets
