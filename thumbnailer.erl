@@ -10,20 +10,24 @@
     ?PHANTOM_CMD ++ URL ++ " " ++ ?PHANTOM_PATH ++ FileName ++ ".jpg"
 )).
 
+-define(CONVERT_CMD(Filename, Size), os:cmd(
+    ?CONVERT_CMD ++
+    ?PHANTOM_PATH ++
+    Filename ++ ".jpg -resize " ++ Size ++ " " ++
+    ?PHANTOM_PATH ++
+    Filename ++ "_" ++ Size ++ ".jpg"
+)).
+
 
 fetch_url(Url) ->
     FileName = erlang:integer_to_list(random:uniform(100000)),
 
     Operations = [
-        fun() ->
-            ?FETCH_CMD(Url, FileName)
-        end,
-        fun() ->
-            os:cmd(
-                ?CONVERT_CMD ++ ?PHANTOM_PATH ++ FileName ++ ".jpg -resize 500x500 "
-                ++ ?PHANTOM_PATH ++ FileName ++ "_500.jpg"
-            )
-        end
+        fun() -> ?FETCH_CMD(Url, FileName) end,
+        fun() -> ?CONVERT_CMD(FileName, "500x500") end,
+        fun() -> ?CONVERT_CMD(FileName, "300x300") end,
+        fun() -> ?CONVERT_CMD(FileName, "200x200") end,
+        fun() -> ?CONVERT_CMD(FileName, "100x100") end
     ],
 
     process_url(Operations).
@@ -35,8 +39,7 @@ process_url([]) ->
 
 process_url([Fun|Rest]) ->
     try
-        Result = Fun(),
-        error_logger:info_msg("~p~n", [Result])
+        Fun()
     catch
         Error:Message ->
             error_logger:info_msg("~p: ~p", [Error, Message])
