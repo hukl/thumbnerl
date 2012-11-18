@@ -7,17 +7,8 @@
 -define(CONVERT_CMD,  "/usr/local/bin/convert ").
 
 -define(FETCH_CMD(URL, FileName), os:cmd(
-    "/usr/local/bin/phantomjs rasterize.js " ++
-    URL ++
-    " /Users/hukl/Projekte/thumbnailer/assets/" ++
-    FileName ++
-    ".jpg"
+    ?PHANTOM_CMD ++ URL ++ " " ++ ?PHANTOM_PATH ++ FileName ++ ".jpg"
 )).
-
-
-%x(#{IMAGE_MAGICK} #{(path + '.jpg')} -resize 500x500 #{path}_500.jpg)
-%x(#{IMAGE_MAGICK} #{(path + '.jpg')} -resize 300x300 #{path}_300.jpg)
-%x(#{IMAGE_MAGICK} #{(path + '.jpg')} -resize 200x200 #{path}_200.jpg)
 
 
 fetch_url(Url) ->
