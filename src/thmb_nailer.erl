@@ -1,4 +1,4 @@
--module(thumbnailer).
+-module(thumb_nailer).
 
 -compile([export_all]).
 
