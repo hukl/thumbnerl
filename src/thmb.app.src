@@ -1,0 +1,29 @@
+{application, thmb, [
+    % A short description of your application.
+    {description, "Shorcut IO Thumbnailer"},
+
+    % Pull the version number from git
+    % {vsn, "0.0.1"},
+    {vsn, git},
+
+    % All names of registered processes in the application. systools uses this
+    % list to detect name clashes between applications.
+    {registered, []},
+
+    % All applications which must be started before this application is started.
+    % systools uses this list to generate correct boot scripts.
+    {applications, [kernel, stdlib]},
+
+    % The application master starts the application by calling the application
+    % callback function start/2 in the module, and with the start argument,
+    % defined here:
+    {mod, {thmb_app, []}},
+
+    {env, [
+        % Applications the backends depends upon.
+        {dependencies, [
+            % sasl,
+            crypto, public_key, ssl
+        ]}
+    ]}
+]}.

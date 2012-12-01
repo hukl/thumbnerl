@@ -1,33 +1,40 @@
--module(thumb_nailer).
+-module(thmb_nailer).
 
 -compile([export_all]).
 
--define(PHANTOM_CMD,  "/usr/local/bin/phantomjs rasterize.js ").
--define(PHANTOM_PATH, "/Users/hukl/Projekte/thumbnailer/assets/").
--define(CONVERT_CMD,  "/usr/local/bin/convert ").
+-define(PHANTOM_CMD, "/usr/local/bin/phantomjs rasterize.js ").
+-define(ASSET_PATH,  "/Users/hukl/Projekte/thumbnailer/assets").
+-define(CONVERT_CMD, "/usr/local/bin/convert ").
 
--define(FETCH_CMD(URL, FileName), os:cmd(
-    ?PHANTOM_CMD ++ URL ++ " " ++ ?PHANTOM_PATH ++ FileName ++ ".jpg"
+-define(FETCH_CMD(URL, Path), os:cmd(
+    ?PHANTOM_CMD ++ URL ++ " " ++ Path ++ ".jpg"
 )).
 
--define(CONVERT_CMD(Filename, Size), os:cmd(
+-define(CONVERT_CMD(Path, Size), os:cmd(
     ?CONVERT_CMD ++
-    ?PHANTOM_PATH ++
-    Filename ++ ".jpg -resize " ++ Size ++ " " ++
-    ?PHANTOM_PATH ++
-    Filename ++ "_" ++ Size ++ ".jpg"
+    Path ++ ".jpg -resize " ++ Size ++ " " ++
+    Path ++ "_" ++ string:substr(Size, 1, 3) ++ ".jpg"
 )).
 
 
-fetch_url(Url) ->
-    FileName = erlang:integer_to_list(random:uniform(100000)),
+fetch_url(Url, Uuid) ->
+    ImageDirPath = string:join([
+        ?ASSET_PATH,
+        string:substr(Uuid, 1, 3),
+        string:substr(Uuid, 4, 3)],
+        "/"
+    ),
+
+    ImagePath = string:join([ImageDirPath, Uuid], "/"),
+
+    filelib:ensure_dir(ImageDirPath),
 
     Operations = [
-        fun() -> ?FETCH_CMD(Url, FileName) end,
-        fun() -> ?CONVERT_CMD(FileName, "500x500") end,
-        fun() -> ?CONVERT_CMD(FileName, "300x300") end,
-        fun() -> ?CONVERT_CMD(FileName, "200x200") end,
-        fun() -> ?CONVERT_CMD(FileName, "100x100") end
+        fun() -> ?FETCH_CMD(Url, ImagePath) end,
+        fun() -> ?CONVERT_CMD(ImagePath, "500x500") end,
+        fun() -> ?CONVERT_CMD(ImagePath, "300x300") end,
+        fun() -> ?CONVERT_CMD(ImagePath, "200x200") end,
+        fun() -> ?CONVERT_CMD(ImagePath, "100x100") end
     ],
 
     process_url(Operations).
